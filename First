@@ -1,1 +1,75 @@
+import turtle
+import time
+import random
 
+# Screen Setup
+win = turtle.Screen()
+win.title("Flappy Bird")
+win.bgcolor("lightblue")
+
+# Bird Setup
+bird = turtle.Turtle()
+bird.speed(0)
+bird.shape("square")
+bird.color("black")
+bird.penup()
+bird.goto(0, -100)
+bird_speed = 0
+
+# Obstacle Setup
+obstacle_distance = 200
+obstacle_height = [200, -200]
+obstacle_speed = 2
+
+# Function to move bird up
+def move_up():
+    global bird_speed
+    bird_speed += 10
+
+# Function to move bird down
+def move_down():
+    global bird_speed
+    bird_speed -= 5
+
+# Keyboard bindings
+win.listen()
+win.onkeypress(move_up, "w")
+win.onkeypress(move_down, "s")
+
+# Game Loop
+while True:
+    win.update()
+
+    # Bird Movement
+    bird.sety(bird.ycor() + bird_speed)
+
+    # Obstacle Movement
+    for i in range(len(obstacle_height)):
+        if obstacle_height[i] < 0:
+            obstacle_y = obstacle_height[i] + obstacle_speed
+        else:
+            obstacle_y = obstacle_height[i] - obstacle_speed
+        obstacle_height[i] = obstacle_y
+
+        # Draw the obstacle
+        obstacle = turtle.Turtle()
+        obstacle.speed(0)
+        obstacle.shape("square")
+        obstacle.color("green")
+        obstacle.penup()
+        obstacle.goto(obstacle_distance, obstacle_y)
+
+        # Move the obstacle off-screen when it's out of the view
+        if obstacle.xcor() < -30:
+            obstacle.goto(obstacle_distance, random.choice(obstacle_height))
+
+        # Collision detection
+        if (bird.ycor() > 290) or (bird.ycor() < -290) or (bird.distance(obstacle) < 20):
+            print("Game Over")
+            time.sleep(2)
+            win.bye()
+
+    # Increase the distance between obstacles
+    obstacle_distance += 1
+
+turtle.done()
